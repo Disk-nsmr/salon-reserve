@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ご予約</title>
+<!-- 単体で開いたとき用の背景（WordPressには貼り付けない） -->
+<style>body { margin: 0; padding: 16px; background: #f6f6f4; }</style>
+</head>
+<body>
+
+<!-- ▼▼▼ WordPressの「カスタムHTML」ブロックには、ここから… ▼▼▼ -->
+<style>
+  /* テーマのスタイルと衝突しないよう、すべて #salon-reserve 配下に限定する */
+  #salon-reserve, #salon-reserve * { box-sizing: border-box; }
+  #salon-reserve { font-family: sans-serif; color: #333; line-height: 1.5; }
+  #salon-reserve .sr-container { max-width: 860px; margin: 0 auto; background: #fff; padding: 24px; border-radius: 8px; }
+  #salon-reserve h2 { font-size: 1.4rem; margin: 0 0 12px; padding: 0; border: none; }
+  #salon-reserve h3 { font-size: 1.1rem; margin: 32px 0 8px; padding: 0; border: none; }
+  #salon-reserve label { display: block; margin-top: 14px; font-weight: bold; font-size: 0.9rem; }
+  #salon-reserve input, #salon-reserve select { display: block; width: 100%; padding: 10px; margin: 4px 0 0; font-size: 1rem; border: 1px solid #ccc; border-radius: 4px; background: #fff; color: #333; height: auto; }
+  #salon-reserve button { padding: 12px; font-size: 1rem; line-height: 1.2; background: #4a7c59; color: #fff; border: none; border-radius: 4px; cursor: pointer; box-shadow: none; text-transform: none; }
+  #salon-reserve button:disabled { opacity: 0.4; cursor: default; }
+  #salon-reserve .sr-full-button { margin-top: 20px; width: 100%; }
+  #salon-reserve .sr-message { margin-top: 16px; padding: 12px; border-radius: 4px; }
+  #salon-reserve .sr-message.sr-success { background: #e6f4ea; color: #1e5e2f; }
+  #salon-reserve .sr-message.sr-error { background: #fdecea; color: #a12622; }
+  #salon-reserve .sr-hidden { display: none !important; }
+  #salon-reserve .sr-table-wrap { overflow-x: auto; }
+
+  /* 凡例・週切り替え */
+  #salon-reserve .sr-legend { display: flex; flex-wrap: wrap; gap: 16px; font-size: 0.85rem; color: #666; }
+  #salon-reserve .sr-week-nav { display: flex; justify-content: space-between; align-items: center; margin: 16px 0 8px; }
+  #salon-reserve .sr-week-nav button { padding: 8px 14px; font-size: 0.9rem; background: #fff; color: #4a7c59; border: 1px solid #4a7c59; }
+  #salon-reserve .sr-week-nav span { font-weight: bold; }
+
+  /* 空き状況カレンダー */
+  #salon-reserve .sr-calendar { width: 100%; border-collapse: collapse; table-layout: fixed; min-width: 560px; border: 1px solid #ddd; margin: 0; }
+  #salon-reserve .sr-calendar th, #salon-reserve .sr-calendar td { border: 1px solid #ddd; text-align: center; vertical-align: middle; height: 56px; padding: 0; background: #fff; }
+  #salon-reserve .sr-calendar thead th { background: #f7f8fa; font-weight: normal; height: 72px; }
+  #salon-reserve .sr-calendar .sr-weekday { display: block; font-size: 0.85rem; color: #888; }
+  #salon-reserve .sr-calendar .sr-day { display: block; font-size: 1.15rem; margin-top: 4px; }
+  #salon-reserve .sr-calendar .sr-sat .sr-weekday { color: #3a6ea5; }
+  #salon-reserve .sr-calendar .sr-sun .sr-weekday { color: #c0392b; }
+  #salon-reserve .sr-calendar th.sr-time { width: 72px; color: #888; font-weight: normal; background: #fff; }
+  #salon-reserve .sr-calendar td.sr-closed, #salon-reserve .sr-calendar td.sr-past { background: #f7f7f7; color: #ccc; }
+  #salon-reserve .sr-calendar td.sr-full { color: #bbb; font-size: 1.3rem; }
+  #salon-reserve .sr-calendar thead th.sr-closed-day, #salon-reserve .sr-calendar th.sr-closed-day .sr-weekday { background: #eee; color: #aaa; }
+  #salon-reserve .sr-slot { display: block; width: 100%; height: 100%; min-height: 56px; margin: 0; background: none; border-radius: 0; font-size: 1.5rem; padding: 0; }
+  #salon-reserve .sr-slot.sr-open { color: #3c9a4e; }
+  #salon-reserve .sr-slot.sr-few { color: #e08a1e; }
+  #salon-reserve .sr-slot:hover { background: #f1f8f2; }
+  #salon-reserve .sr-slot.sr-selected { background: #4a7c59; color: #fff; }
+
+  /* 予約入力欄 */
+  #salon-reserve .sr-reserve-box { margin-top: 24px; padding: 16px; border: 1px solid #4a7c59; border-radius: 8px; }
+  #salon-reserve .sr-selected-slot { font-weight: bold; font-size: 1.1rem; }
+
+  /* 管理ページ */
+  #salon-reserve .sr-list { width: 100%; border-collapse: collapse; margin: 16px 0 0; font-size: 0.9rem; border: none; }
+  #salon-reserve .sr-list th, #salon-reserve .sr-list td { border: none; border-bottom: 1px solid #ddd; padding: 8px; text-align: left; background: #fff; }
+  #salon-reserve .sr-list td select { width: auto; margin: 0; padding: 4px; }
+  #salon-reserve .sr-list td button, #salon-reserve .sr-holiday-list button { padding: 6px 10px; font-size: 0.85rem; background: #a12622; }
+  #salon-reserve .sr-list tr.sr-canceled td { color: #aaa; }
+  #salon-reserve .sr-inline-form { display: flex; gap: 8px; align-items: center; margin-top: 8px; }
+  #salon-reserve .sr-inline-form input { width: auto; margin: 0; }
+  #salon-reserve .sr-holiday-list { list-style: none; padding: 0; margin: 8px 0 0; }
+  #salon-reserve .sr-holiday-list li { display: flex; gap: 12px; align-items: center; padding: 6px 0; margin: 0; border-bottom: 1px solid #eee; }
+</style>
+
+<div id="salon-reserve">
+  <!-- 予約ページ（お客さん用） -->
+  <div id="sr-form-page" class="sr-container sr-hidden">
+    <h2>ご予約</h2>
+    <div class="sr-legend">
+      <span>◎ 空きあり</span><span>△ 残りわずか</span><span>× 満員</span><span>– 受付不可</span>
+    </div>
+    <div class="sr-week-nav">
+      <button type="button" id="sr-prev-week">‹ 前の週</button>
+      <span id="sr-week-label"></span>
+      <button type="button" id="sr-next-week">次の週 ›</button>
+    </div>
+    <div class="sr-table-wrap">
+      <table class="sr-calendar" id="sr-calendar"><thead></thead><tbody></tbody></table>
+    </div>
+
+    <div id="sr-reserve-box" class="sr-reserve-box sr-hidden">
+      <div class="sr-selected-slot" id="sr-selected-slot"></div>
+      <form id="sr-reserve-form">
+        <label>お名前<input type="text" name="name" required></label>
+        <label>メールアドレス<input type="email" name="email" required></label>
+        <label>幼児の人数<select name="children" required></select></label>
+        <button type="submit" class="sr-full-button">予約する</button>
+      </form>
+    </div>
+    <div id="sr-form-message" class="sr-message sr-hidden"></div>
+  </div>
+
+  <!-- 管理ページ（オーナー用） -->
+  <div id="sr-admin-page" class="sr-container sr-hidden">
+    <h2>予約管理</h2>
+    <form id="sr-login-form">
+      <label>パスワード<input type="password" name="password" required></label>
+      <button type="submit" class="sr-full-button">表示</button>
+    </form>
+    <div id="sr-admin-message" class="sr-message sr-hidden"></div>
+
+    <div id="sr-admin-content" class="sr-hidden">
+      <h3>予約一覧</h3>
+      <div class="sr-table-wrap">
+        <table class="sr-list" id="sr-reservation-table">
+          <thead>
+            <tr><th>希望日</th><th>時間</th><th>名前</th><th>メール</th><th>幼児</th><th>ステータス</th><th></th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
+      <h3>休業日</h3>
+      <form id="sr-holiday-form" class="sr-inline-form">
+        <input type="date" name="date" required>
+        <button type="submit">追加</button>
+      </form>
+      <ul class="sr-holiday-list" id="sr-holiday-list"></ul>
+    </div>
+  </div>
+</div>
+
+<script>
+// テーマや他のプラグインと変数名が衝突しないよう、関数の中に閉じ込める
+(function () {
+  // ===== 設定 =====
+  const GAS_URL = 'ここにGASのウェブアプリURLを貼り付け';
+  const TIME_SLOTS = ['11:00', '12:00', '13:00', '14:00', '15:00', '16:00'];
+  const CAPACITY = 5;       // 1枠の定員（保護者＋幼児の合計）
+  const FEW_THRESHOLD = 3;  // 残りがこの人数以下なら「△」
+  const MIN_CHILDREN = 1;
+  const MAX_CHILDREN = 4;
+  const STATUSES = ['受付中', '確定', 'キャンセル'];
+  const WEEKDAYS = ['日', '月', '火', '水', '木', '金', '土'];
+
+  const $ = id => document.getElementById(id);
+
+  // GASにPOSTする（プリフライト回避のため text/plain で送る）
+  async function callApi(payload) {
+    try {
+      const res = await fetch(GAS_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(payload),
+      });
+      const result = await res.json();
+      if (!result.ok) throw new Error(result.error);
+      return result.data;
+    } catch (err) {
+      console.error('API呼び出しでエラー:', payload.action, err);
+      throw err;
+    }
+  }
+
+  function showMessage(el, text, type) {
+    el.textContent = text;
+    el.className = 'sr-message sr-' + type;
+  }
+
+  // Date → yyyy-MM-dd（ローカル時刻）
+  function toDateStr(d) {
+    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+  }
+
+  function addDays(d, n) {
+    const r = new Date(d);
+    r.setDate(r.getDate() + n);
+    return r;
+  }
+
+  // ===== 予約ページ =====
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  let weekStart = new Date(today); // 表示中の週の初日（今日から7日ずつ）
+  let selected = null;             // 選択中の枠 { date, time, remaining }
+
+  function initForm() {
+    $('sr-form-page').classList.remove('sr-hidden');
+    $('sr-prev-week').addEventListener('click', () => moveWeek(-7));
+    $('sr-next-week').addEventListener('click', () => moveWeek(7));
+    $('sr-reserve-form').addEventListener('submit', submitReservation);
+    loadCalendar();
+  }
+
+  function moveWeek(days) {
+    weekStart = addDays(weekStart, days);
+    if (weekStart < today) weekStart = new Date(today);
+    selectSlot(null);
+    loadCalendar();
+  }
+
+  // 空き状況を取得してカレンダーを描画
+  async function loadCalendar() {
+    const days = [...Array(7)].map((_, i) => addDays(weekStart, i));
+    const from = toDateStr(days[0]);
+    const to = toDateStr(days[6]);
+    $('sr-week-label').textContent =
+      (days[0].getMonth() + 1) + '/' + days[0].getDate() + ' 〜 ' + (days[6].getMonth() + 1) + '/' + days[6].getDate();
+    $('sr-prev-week').disabled = weekStart <= today;
+
+    try {
+      const data = await callApi({ action: 'availability', from, to });
+      renderCalendar(days, data);
+    } catch (err) {
+      showMessage($('sr-form-message'), '空き状況の取得に失敗しました。時間をおいて再度お試しください。', 'error');
+    }
+  }
+
+  // 枠の状態を判定
+  function slotState(dateStr, time, data) {
+    if (data.holidays.includes(dateStr)) return { state: 'closed' };
+    const now = new Date();
+    const nowTime = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
+    if (dateStr < toDateStr(now) || (dateStr === toDateStr(now) && time <= nowTime)) return { state: 'past' };
+    const remaining = CAPACITY - (data.used[dateStr + ' ' + time] || 0);
+    // 保護者1名＋幼児1名の2名分がなければ予約不可
+    if (remaining < 1 + MIN_CHILDREN) return { state: 'full', remaining };
+    if (remaining <= FEW_THRESHOLD) return { state: 'few', remaining };
+    return { state: 'open', remaining };
+  }
+
+  function renderCalendar(days, data) {
+    const table = $('sr-calendar');
+
+    // 見出し行（曜日・日付）
+    const headRow = document.createElement('tr');
+    headRow.appendChild(document.createElement('th'));
+    days.forEach(d => {
+      const th = document.createElement('th');
+      const dateStr = toDateStr(d);
+      const isHoliday = data.holidays.includes(dateStr);
+      if (d.getDay() === 6) th.classList.add('sr-sat');
+      if (d.getDay() === 0) th.classList.add('sr-sun');
+      if (isHoliday) th.classList.add('sr-closed-day');
+      const weekday = document.createElement('span');
+      weekday.className = 'sr-weekday';
+      weekday.textContent = isHoliday ? '休業日' : WEEKDAYS[d.getDay()];
+      const day = document.createElement('span');
+      day.className = 'sr-day';
+      day.textContent = (d.getMonth() + 1) + '/' + d.getDate();
+      th.append(weekday, day);
+      headRow.appendChild(th);
+    });
+    table.tHead.replaceChildren(headRow);
+
+    // 時間ごとの行
+    const tbody = table.tBodies[0];
+    tbody.replaceChildren();
+    TIME_SLOTS.forEach(time => {
+      const tr = tbody.insertRow();
+      const th = document.createElement('th');
+      th.className = 'sr-time';
+      th.textContent = time;
+      tr.appendChild(th);
+
+      days.forEach(d => {
+        const dateStr = toDateStr(d);
+        const { state, remaining } = slotState(dateStr, time, data);
+        const td = tr.insertCell();
+        td.className = 'sr-' + state;
+        if (state === 'open' || state === 'few') {
+          const button = document.createElement('button');
+          button.type = 'button';
+          button.className = 'sr-slot sr-' + state;
+          button.textContent = state === 'open' ? '◎' : '△';
+          button.title = '残り' + remaining + '名';
+          if (selected && selected.date === dateStr && selected.time === time) button.classList.add('sr-selected');
+          button.addEventListener('click', () => selectSlot({ date: dateStr, time, remaining }, button));
+          td.appendChild(button);
+        } else {
+          td.textContent = state === 'full' ? '×' : '–';
+        }
+      });
+    });
+  }
+
+  // 枠を選択して入力欄を表示（null で選択解除）
+  function selectSlot(slot, button) {
+    selected = slot;
+    document.querySelectorAll('#salon-reserve .sr-slot.sr-selected').forEach(b => b.classList.remove('sr-selected'));
+    const box = $('sr-reserve-box');
+    if (!slot) {
+      box.classList.add('sr-hidden');
+      return;
+    }
+    button.classList.add('sr-selected');
+    $('sr-form-message').classList.add('sr-hidden');
+
+    const d = new Date(slot.date + 'T00:00:00');
+    $('sr-selected-slot').textContent =
+      (d.getMonth() + 1) + '/' + d.getDate() + '（' + WEEKDAYS[d.getDay()] + '） ' + slot.time + '〜';
+
+    // 残り人数に合わせて幼児の人数の選択肢を絞る（保護者1名分を引く）
+    const select = $('sr-reserve-form').elements.children;
+    const prev = Number(select.value);
+    select.replaceChildren();
+    const max = Math.min(MAX_CHILDREN, slot.remaining - 1);
+    for (let n = MIN_CHILDREN; n <= max; n++) select.add(new Option(n + '名', n));
+    if (prev && prev <= max) select.value = prev;
+
+    box.classList.remove('sr-hidden');
+    box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  async function submitReservation(e) {
+    e.preventDefault();
+    const form = e.target;
+    const button = form.querySelector('button');
+    const message = $('sr-form-message');
+    button.disabled = true;
+    try {
+      await callApi({
+        action: 'create',
+        name: form.elements.name.value,
+        email: form.elements.email.value,
+        date: selected.date,
+        time: selected.time,
+        children: Number(form.elements.children.value),
+      });
+      form.reset();
+      selectSlot(null);
+      showMessage(message, '予約を受け付けました。確認メールをお送りしましたのでご確認ください。', 'success');
+    } catch (err) {
+      showMessage(message, err.message || '送信に失敗しました。時間をおいて再度お試しください。', 'error');
+    } finally {
+      button.disabled = false;
+      loadCalendar(); // 最新の空き状況に更新
+    }
+  }
+
+  // ===== 管理ページ =====
+  let adminPassword = '';
+
+  function initAdmin() {
+    $('sr-admin-page').classList.remove('sr-hidden');
+    const loginForm = $('sr-login-form');
+
+    loginForm.addEventListener('submit', async e => {
+      e.preventDefault();
+      adminPassword = loginForm.elements.password.value;
+      if (await loadAdmin()) {
+        loginForm.classList.add('sr-hidden');
+        $('sr-admin-content').classList.remove('sr-hidden');
+      }
+    });
+
+    $('sr-holiday-form').addEventListener('submit', async e => {
+      e.preventDefault();
+      const date = e.target.elements.date.value;
+      try {
+        const result = await callApi({ action: 'addHoliday', password: adminPassword, date });
+        if (result.reservationCount > 0) {
+          alert(date + ' には有効な予約が ' + result.reservationCount + ' 件あります。必要に応じてキャンセルしてください。');
+        }
+        e.target.reset();
+        await loadAdmin();
+      } catch (err) {
+        showMessage($('sr-admin-message'), err.message, 'error');
+      }
+    });
+  }
+
+  // 予約一覧・休業日を取得して表示（成功したら true）
+  async function loadAdmin() {
+    const message = $('sr-admin-message');
+    try {
+      const data = await callApi({ action: 'list', password: adminPassword });
+      message.classList.add('sr-hidden');
+      renderReservations(data.reservations);
+      renderHolidays(data.holidays);
+      return true;
+    } catch (err) {
+      showMessage(message, err.message, 'error');
+      return false;
+    }
+  }
+
+  function renderReservations(list) {
+    const tbody = $('sr-reservation-table').tBodies[0];
+    tbody.replaceChildren();
+
+    if (list.length === 0) {
+      const td = tbody.insertRow().insertCell();
+      td.colSpan = 7;
+      td.textContent = '予約はありません';
+      return;
+    }
+
+    list.forEach(r => {
+      const tr = tbody.insertRow();
+      if (r.status === 'キャンセル') tr.className = 'sr-canceled';
+      [r.date, r.time, r.name, r.email, r.children + '名'].forEach(v => {
+        tr.insertCell().textContent = v;
+      });
+
+      // ステータス変更
+      const select = document.createElement('select');
+      STATUSES.forEach(s => select.add(new Option(s, s, false, s === r.status)));
+      select.addEventListener('change', () => changeStatus(r.id, select.value));
+      tr.insertCell().appendChild(select);
+
+      // キャンセルボタン
+      const cell = tr.insertCell();
+      if (r.status !== 'キャンセル') {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.textContent = 'キャンセル';
+        button.addEventListener('click', () => {
+          if (confirm(r.date + ' ' + r.time + ' ' + r.name + ' 様の予約をキャンセルしますか？')) {
+            changeStatus(r.id, 'キャンセル');
+          }
+        });
+        cell.appendChild(button);
+      }
+    });
+  }
+
+  function renderHolidays(holidays) {
+    const ul = $('sr-holiday-list');
+    ul.replaceChildren();
+    const upcoming = holidays.filter(d => d >= toDateStr(new Date()));
+    if (upcoming.length === 0) {
+      const li = document.createElement('li');
+      li.textContent = '登録されている休業日はありません';
+      ul.appendChild(li);
+      return;
+    }
+    upcoming.forEach(date => {
+      const li = document.createElement('li');
+      const d = new Date(date + 'T00:00:00');
+      const span = document.createElement('span');
+      span.textContent = date + '（' + WEEKDAYS[d.getDay()] + '）';
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.textContent = '削除';
+      button.addEventListener('click', () => removeHoliday(date));
+      li.append(span, button);
+      ul.appendChild(li);
+    });
+  }
+
+  async function removeHoliday(date) {
+    try {
+      await callApi({ action: 'removeHoliday', password: adminPassword, date });
+      await loadAdmin();
+    } catch (err) {
+      showMessage($('sr-admin-message'), err.message, 'error');
+    }
+  }
+
+  async function changeStatus(id, status) {
+    try {
+      await callApi({ action: 'updateStatus', password: adminPassword, id, status });
+      await loadAdmin();
+    } catch (err) {
+      // 表示を元に戻してからエラーを出す
+      await loadAdmin();
+      showMessage($('sr-admin-message'), err.message, 'error');
+    }
+  }
+
+  // ===== 起動 =====
+  if (new URLSearchParams(location.search).get('admin') === 'true') {
+    initAdmin();
+  } else {
+    initForm();
+  }
+})();
+</script>
+<!-- ▲▲▲ …ここまでを貼り付ける ▲▲▲ -->
+
+</body>
+</html>

@@ -1,0 +1,4 @@
+# index.html 以外は公開しない
+*
+!index.html
+!.gitignore
