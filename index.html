@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ご予約</title>
+<title>ご予約｜猫カフェNAP</title>
 <!-- 単体で開いたとき用の背景（WordPressには貼り付けない） -->
 <style>body { margin: 0; padding: 16px; background: #f6f6f4; }</style>
 </head>
@@ -17,8 +17,15 @@
   #salon-reserve .sr-container { max-width: 860px; margin: 0 auto; background: #fff; padding: 24px; border-radius: 8px; }
   #salon-reserve h2 { font-size: 1.4rem; margin: 0 0 12px; padding: 0; border: none; }
   #salon-reserve h3 { font-size: 1.1rem; margin: 32px 0 8px; padding: 0; border: none; }
-  #salon-reserve label { display: block; margin-top: 14px; font-weight: bold; font-size: 0.9rem; }
-  #salon-reserve input, #salon-reserve select { display: block; width: 100%; padding: 10px; margin: 4px 0 0; font-size: 1rem; border: 1px solid #ccc; border-radius: 4px; background: #fff; color: #333; height: auto; }
+  #salon-reserve label, #salon-reserve .sr-field-title { display: block; margin-top: 16px; font-weight: bold; font-size: 0.9rem; }
+  #salon-reserve .sr-required { color: #c0392b; font-size: 0.8rem; margin-left: 4px; }
+  #salon-reserve .sr-desc { font-size: 0.8rem; color: #666; font-weight: normal; white-space: pre-line; margin: 2px 0 0; }
+  #salon-reserve input, #salon-reserve select, #salon-reserve textarea { display: block; width: 100%; padding: 10px; margin: 4px 0 0; font-size: 1rem; border: 1px solid #ccc; border-radius: 4px; background: #fff; color: #333; height: auto; }
+  #salon-reserve input[type="checkbox"] { display: inline-block; width: auto; margin: 0 6px 0 0; padding: 0; vertical-align: middle; }
+  #salon-reserve .sr-check { display: block; margin-top: 6px; font-weight: normal; font-size: 0.95rem; }
+  #salon-reserve .sr-row { display: flex; gap: 12px; }
+  #salon-reserve .sr-row > label { flex: 1; }
+  #salon-reserve a { color: #3a6ea5; }
   #salon-reserve button { padding: 12px; font-size: 1rem; line-height: 1.2; background: #4a7c59; color: #fff; border: none; border-radius: 4px; cursor: pointer; box-shadow: none; text-transform: none; }
   #salon-reserve button:disabled { opacity: 0.4; cursor: default; }
   #salon-reserve .sr-full-button { margin-top: 20px; width: 100%; }
@@ -28,20 +35,20 @@
   #salon-reserve .sr-hidden { display: none !important; }
   #salon-reserve .sr-table-wrap { overflow-x: auto; }
 
-  /* 凡例・週切り替え */
+  /* 凡例・週/月の切り替え */
   #salon-reserve .sr-legend { display: flex; flex-wrap: wrap; gap: 16px; font-size: 0.85rem; color: #666; }
-  #salon-reserve .sr-week-nav { display: flex; justify-content: space-between; align-items: center; margin: 16px 0 8px; }
-  #salon-reserve .sr-week-nav button { padding: 8px 14px; font-size: 0.9rem; background: #fff; color: #4a7c59; border: 1px solid #4a7c59; }
-  #salon-reserve .sr-week-nav span { font-weight: bold; }
+  #salon-reserve .sr-nav { display: flex; justify-content: space-between; align-items: center; margin: 16px 0 8px; }
+  #salon-reserve .sr-nav button { padding: 8px 14px; font-size: 0.9rem; background: #fff; color: #4a7c59; border: 1px solid #4a7c59; }
+  #salon-reserve .sr-nav span { font-weight: bold; font-size: 1.1rem; }
 
-  /* 空き状況カレンダー */
+  /* 空き状況カレンダー（予約ページ） */
   #salon-reserve .sr-calendar { width: 100%; border-collapse: collapse; table-layout: fixed; min-width: 560px; border: 1px solid #ddd; margin: 0; }
   #salon-reserve .sr-calendar th, #salon-reserve .sr-calendar td { border: 1px solid #ddd; text-align: center; vertical-align: middle; height: 56px; padding: 0; background: #fff; }
   #salon-reserve .sr-calendar thead th { background: #f7f8fa; font-weight: normal; height: 72px; }
-  #salon-reserve .sr-calendar .sr-weekday { display: block; font-size: 0.85rem; color: #888; }
-  #salon-reserve .sr-calendar .sr-day { display: block; font-size: 1.15rem; margin-top: 4px; }
-  #salon-reserve .sr-calendar .sr-sat .sr-weekday { color: #3a6ea5; }
-  #salon-reserve .sr-calendar .sr-sun .sr-weekday { color: #c0392b; }
+  #salon-reserve .sr-weekday { display: block; font-size: 0.85rem; color: #888; }
+  #salon-reserve .sr-day { display: block; font-size: 1.15rem; margin-top: 4px; }
+  #salon-reserve .sr-sat .sr-weekday { color: #3a6ea5; }
+  #salon-reserve .sr-sun .sr-weekday { color: #c0392b; }
   #salon-reserve .sr-calendar th.sr-time { width: 72px; color: #888; font-weight: normal; background: #fff; }
   #salon-reserve .sr-calendar td.sr-closed, #salon-reserve .sr-calendar td.sr-past { background: #f7f7f7; color: #ccc; }
   #salon-reserve .sr-calendar td.sr-full { color: #bbb; font-size: 1.3rem; }
@@ -56,16 +63,52 @@
   #salon-reserve .sr-reserve-box { margin-top: 24px; padding: 16px; border: 1px solid #4a7c59; border-radius: 8px; }
   #salon-reserve .sr-selected-slot { font-weight: bold; font-size: 1.1rem; }
 
-  /* 管理ページ */
-  #salon-reserve .sr-list { width: 100%; border-collapse: collapse; margin: 16px 0 0; font-size: 0.9rem; border: none; }
-  #salon-reserve .sr-list th, #salon-reserve .sr-list td { border: none; border-bottom: 1px solid #ddd; padding: 8px; text-align: left; background: #fff; }
-  #salon-reserve .sr-list td select { width: auto; margin: 0; padding: 4px; }
-  #salon-reserve .sr-list td button, #salon-reserve .sr-holiday-list button { padding: 6px 10px; font-size: 0.85rem; background: #a12622; }
-  #salon-reserve .sr-list tr.sr-canceled td { color: #aaa; }
+  /* 月間カレンダー（管理ページ） */
+  #salon-reserve .sr-month { width: 100%; border-collapse: collapse; table-layout: fixed; border: 1px solid #999; margin: 0; }
+  #salon-reserve .sr-month th { border: 1px solid #999; padding: 6px; text-align: left; font-weight: normal; background: #fff; }
+  #salon-reserve .sr-month td { border: 1px solid #999; height: 90px; padding: 0; vertical-align: top; background: #fff; }
+  #salon-reserve .sr-month td.sr-other-month { background: #f3f4f7; }
+  #salon-reserve .sr-month td.sr-holiday { background: #f1f1f1; }
+  #salon-reserve .sr-month-cell { display: block; width: 100%; height: 100%; min-height: 90px; padding: 6px; margin: 0; background: none; color: #333; border-radius: 0; text-align: left; }
+  #salon-reserve .sr-month-cell:hover { background: #f1f8f2; }
+  #salon-reserve .sr-month-count { display: block; text-align: center; font-size: 1.5rem; color: #8bc34a; margin-top: 8px; }
+
+  /* 日別ポップアップ */
+  #salon-reserve .sr-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 100000; display: flex; align-items: center; justify-content: center; padding: 16px; }
+  #salon-reserve .sr-modal { background: #fff; width: 100%; max-width: 760px; height: min(90vh, 760px); display: flex; flex-direction: column; border-radius: 4px; box-shadow: 0 4px 24px rgba(0,0,0,0.3); }
+  #salon-reserve .sr-modal-head { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px 0; }
+  #salon-reserve .sr-modal-title { font-size: 1.3rem; font-weight: bold; }
+  #salon-reserve .sr-close { background: none; color: #555; font-size: 1.6rem; padding: 0 6px; }
+  #salon-reserve .sr-tabs { display: flex; border-bottom: 1px solid #ddd; padding: 8px 8px 0; }
+  #salon-reserve .sr-tab { background: none; color: #3a6ea5; border-radius: 0; padding: 8px 14px; border: 1px solid transparent; border-bottom: none; margin-bottom: -1px; }
+  #salon-reserve .sr-tab.sr-active { color: #333; border-color: #ddd; background: #fff; }
+  #salon-reserve .sr-modal-body { flex: 1; overflow-y: auto; }
+  #salon-reserve .sr-modal-foot { display: flex; gap: 8px; padding: 12px 16px; border-top: 1px solid #ddd; flex-wrap: wrap; }
+  #salon-reserve .sr-modal-foot .sr-spacer { flex: 1; }
+  #salon-reserve .sr-modal-foot button { background: #3273b8; padding: 10px 16px; font-size: 0.95rem; }
+  #salon-reserve .sr-modal-foot button.sr-danger { background: #a12622; }
+  #salon-reserve .sr-customer { display: block; width: 100%; text-align: left; background: #fff; color: #333; border-radius: 0; border-bottom: 1px solid #eee; padding: 10px 16px; }
+  #salon-reserve .sr-customer:hover { background: #f5f8fc; }
+  #salon-reserve .sr-customer div { margin-top: 4px; }
+  #salon-reserve .sr-slot-row { padding: 10px 16px; border-bottom: 1px solid #eee; color: #3a6ea5; }
+  #salon-reserve .sr-slot-row span { margin-left: 16px; }
+  #salon-reserve .sr-empty { padding: 16px; color: #888; }
+  #salon-reserve .sr-badge { display: inline-block; min-width: 136px; padding: 3px 10px; font-size: 0.85rem; color: #fff; text-align: center; }
+  #salon-reserve .sr-badge.sr-approved { background: #9ccc65; }
+  #salon-reserve .sr-badge.sr-pending { background: #f0ad4e; }
+  #salon-reserve .sr-badge.sr-canceled { background: #bbb; }
+  #salon-reserve .sr-detail { padding: 0 16px 16px; }
+  #salon-reserve .sr-detail dl { margin: 0; }
+  #salon-reserve .sr-detail dt { font-size: 0.85rem; color: #555; padding-top: 10px; }
+  #salon-reserve .sr-detail dd { margin: 2px 0 0; padding-bottom: 10px; border-bottom: 1px solid #eee; white-space: pre-wrap; }
+  #salon-reserve .sr-back { background: none; color: #3a6ea5; padding: 10px 0; font-size: 0.9rem; }
+
+  /* 休業日 */
   #salon-reserve .sr-inline-form { display: flex; gap: 8px; align-items: center; margin-top: 8px; }
   #salon-reserve .sr-inline-form input { width: auto; margin: 0; }
   #salon-reserve .sr-holiday-list { list-style: none; padding: 0; margin: 8px 0 0; }
   #salon-reserve .sr-holiday-list li { display: flex; gap: 12px; align-items: center; padding: 6px 0; margin: 0; border-bottom: 1px solid #eee; }
+  #salon-reserve .sr-holiday-list button { padding: 6px 10px; font-size: 0.85rem; background: #a12622; }
 </style>
 
 <div id="salon-reserve">
@@ -75,7 +118,7 @@
     <div class="sr-legend">
       <span>◎ 空きあり</span><span>△ 残りわずか</span><span>× 満員</span><span>– 受付不可</span>
     </div>
-    <div class="sr-week-nav">
+    <div class="sr-nav">
       <button type="button" id="sr-prev-week">‹ 前の週</button>
       <span id="sr-week-label"></span>
       <button type="button" id="sr-next-week">次の週 ›</button>
@@ -87,9 +130,35 @@
     <div id="sr-reserve-box" class="sr-reserve-box sr-hidden">
       <div class="sr-selected-slot" id="sr-selected-slot"></div>
       <form id="sr-reserve-form">
-        <label>お名前<input type="text" name="name" required></label>
-        <label>メールアドレス<input type="email" name="email" required></label>
-        <label>幼児の人数<select name="children" required></select></label>
+        <label>利用人数<span class="sr-required">必須</span>
+          <span class="sr-desc">3歳以下のお子様も人数に含めてご予約ください。
+5名以上(同グループ)は『5名』で予約いただき、備考欄に人数の詳細をご記入ください。
+長時間予約したい場合は、1時間ずつ連続でご予約ください。</span>
+          <select name="people" required></select>
+        </label>
+        <div class="sr-row">
+          <label>姓<span class="sr-required">必須</span><input type="text" name="lastName" required autocomplete="family-name"></label>
+          <label>名<span class="sr-required">必須</span><input type="text" name="firstName" required autocomplete="given-name"></label>
+        </div>
+        <label>メール<span class="sr-required">必須</span><input type="email" name="email" required autocomplete="email"></label>
+        <label>備考欄<input type="text" name="note" placeholder="小学生以下のお子様の人数をご記入ください。"></label>
+
+        <div class="sr-field-title">駐車場について
+          <p class="sr-desc">駐車場の場所は予約完了メールにてご案内いたします</p>
+        </div>
+        <label class="sr-check"><input type="checkbox" name="parking">駐車場利用予定の方はこちらにチェックしてください</label>
+
+        <div class="sr-field-title"><a id="sr-terms-link" target="_blank" rel="noopener">利用規約（こちらをクリックしてください）</a><span class="sr-required">必須</span></div>
+        <label class="sr-check"><input type="checkbox" name="terms" required>同意する</label>
+
+        <div class="sr-field-title">お知らせ<span class="sr-required">必須</span>
+          <p class="sr-desc">※当店はコワーキングスペースを兼ねており、お仕事や勉強目的のお客様が同じ空間にいらっしゃる場合があります。お気になさらず、会話や猫ちゃんとのふれあいを通常通りお楽しみください。</p>
+        </div>
+        <label class="sr-check"><input type="checkbox" name="notice" required>了解しました</label>
+
+        <div class="sr-field-title">当店をどこでお知りになりましたか？（当てはまるものをすべてお選びください）</div>
+        <div id="sr-sources"></div>
+
         <button type="submit" class="sr-full-button">予約する</button>
       </form>
     </div>
@@ -98,7 +167,7 @@
 
   <!-- 管理ページ（オーナー用） -->
   <div id="sr-admin-page" class="sr-container sr-hidden">
-    <h2>予約管理</h2>
+    <h2>予約済みの顧客</h2>
     <form id="sr-login-form">
       <label>パスワード<input type="password" name="password" required></label>
       <button type="submit" class="sr-full-button">表示</button>
@@ -106,15 +175,12 @@
     <div id="sr-admin-message" class="sr-message sr-hidden"></div>
 
     <div id="sr-admin-content" class="sr-hidden">
-      <h3>予約一覧</h3>
-      <div class="sr-table-wrap">
-        <table class="sr-list" id="sr-reservation-table">
-          <thead>
-            <tr><th>希望日</th><th>時間</th><th>名前</th><th>メール</th><th>幼児</th><th>ステータス</th><th></th></tr>
-          </thead>
-          <tbody></tbody>
-        </table>
+      <div class="sr-nav">
+        <button type="button" id="sr-prev-month"></button>
+        <span id="sr-month-label"></span>
+        <button type="button" id="sr-next-month"></button>
       </div>
+      <table class="sr-month" id="sr-month"><thead></thead><tbody></tbody></table>
 
       <h3>休業日</h3>
       <form id="sr-holiday-form" class="sr-inline-form">
@@ -123,26 +189,68 @@
       </form>
       <ul class="sr-holiday-list" id="sr-holiday-list"></ul>
     </div>
+
+    <!-- 日別ポップアップ -->
+    <div id="sr-overlay" class="sr-overlay sr-hidden">
+      <div class="sr-modal" role="dialog" aria-modal="true">
+        <div class="sr-modal-head">
+          <div class="sr-modal-title" id="sr-modal-title"></div>
+          <button type="button" class="sr-close" id="sr-modal-close" aria-label="閉じる">×</button>
+        </div>
+        <div class="sr-tabs">
+          <button type="button" class="sr-tab" data-tab="customers">顧客</button>
+          <button type="button" class="sr-tab" data-tab="slots">予約</button>
+        </div>
+        <div class="sr-modal-body" id="sr-modal-body"></div>
+        <div class="sr-modal-foot" id="sr-modal-foot"></div>
+      </div>
+    </div>
   </div>
 </div>
 
 <script>
 // テーマや他のプラグインと変数名が衝突しないよう、関数の中に閉じ込める
 (function () {
-  // ===== 設定 =====
+  // ===== 設定（Code.gs と合わせる） =====
   const GAS_URL = 'ここにGASのウェブアプリURLを貼り付け';
   const TIME_SLOTS = ['11:00', '12:00', '13:00', '14:00', '15:00', '16:00'];
-  const CAPACITY = 5;       // 1枠の定員（保護者＋幼児の合計）
-  const FEW_THRESHOLD = 3;  // 残りがこの人数以下なら「△」
-  const MIN_CHILDREN = 1;
-  const MAX_CHILDREN = 4;
-  const STATUSES = ['受付中', '確定', 'キャンセル'];
+  const CAPACITY = 5;          // 1枠の定員（利用人数の合計）
+  const FEW_THRESHOLD = 2;     // 残りがこの人数以下なら「△」
+  const MIN_PEOPLE = 1;
+  const MAX_PEOPLE = 5;
+  const CUTOFF_MINUTES = 30;   // 開始何分前で締め切るか
+  const MAX_DAYS_AHEAD = 33;   // 今日から何日先まで予約できるか
+  const STATUSES = ['承認済み', '保留中', 'キャンセル'];
+  const STATUS_CLASS = { '承認済み': 'sr-approved', '保留中': 'sr-pending', 'キャンセル': 'sr-canceled' };
+  const TERMS_URL = 'https://nap2025.net/termsofservice/';
+  const SOURCE_OPTIONS = [
+    'インターネットやマップの検索（Googleなど）', 'Instagram', 'Tiktok', 'Threads', 'チラシ',
+    'メディアの記事（号外NETや京田辺ママなど）', '知人・ご家族からの紹介', 'その他',
+  ];
   const WEEKDAYS = ['日', '月', '火', '水', '木', '金', '土'];
 
   const $ = id => document.getElementById(id);
 
+  // 要素を作る小さなヘルパー（文字列の子要素はテキストとして入れるのでHTMLは解釈されない）
+  function el(tag, attrs, ...children) {
+    const e = document.createElement(tag);
+    Object.entries(attrs || {}).forEach(([k, v]) => {
+      if (k === 'class') e.className = v;
+      else if (k.startsWith('on')) e.addEventListener(k.slice(2), v);
+      else if (k.includes('-')) e.setAttribute(k, v);
+      else e[k] = v;
+    });
+    e.append(...children.filter(c => c !== null && c !== undefined && c !== false));
+    return e;
+  }
+
   // GASにPOSTする（プリフライト回避のため text/plain で送る）
   async function callApi(payload) {
+    if (!GAS_URL.startsWith('https://script.google.com/')) {
+      const err = new Error('GAS_URL が未設定です。index.html の GAS_URL にウェブアプリのURLを設定してください');
+      console.error(err.message);
+      throw err;
+    }
     try {
       const res = await fetch(GAS_URL, {
         method: 'POST',
@@ -158,14 +266,26 @@
     }
   }
 
-  function showMessage(el, text, type) {
-    el.textContent = text;
-    el.className = 'sr-message sr-' + type;
+  function showMessage(target, text, type) {
+    target.textContent = text;
+    target.className = 'sr-message sr-' + type;
+  }
+
+  function hideMessage(target) {
+    target.classList.add('sr-hidden');
   }
 
   // Date → yyyy-MM-dd（ローカル時刻）
   function toDateStr(d) {
     return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+  }
+
+  function toTimeStr(d) {
+    return String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
+  }
+
+  function parseDate(dateStr) {
+    return new Date(dateStr + 'T00:00:00');
   }
 
   function addDays(d, n) {
@@ -174,14 +294,40 @@
     return r;
   }
 
-  // ===== 予約ページ =====
+  // 「2026年10月09日 金曜日」
+  function formatLongDate(dateStr) {
+    const [y, m, d] = dateStr.split('-');
+    return y + '年' + m + '月' + d + '日 ' + WEEKDAYS[parseDate(dateStr).getDay()] + '曜日';
+  }
+
+  // 「10/9（金）」
+  function formatShortDate(dateStr) {
+    const d = parseDate(dateStr);
+    return (d.getMonth() + 1) + '/' + d.getDate() + '（' + WEEKDAYS[d.getDay()] + '）';
+  }
+
+  function peopleOptions(select, max, current) {
+    select.replaceChildren();
+    for (let n = MIN_PEOPLE; n <= max; n++) select.add(new Option(n + '名', n));
+    if (current && current <= max) select.value = current;
+  }
+
+  // =====================================================
+  // 予約ページ（お客さん用）
+  // =====================================================
   const today = new Date();
   today.setHours(0, 0, 0, 0);
+  const lastBookableDate = toDateStr(addDays(today, MAX_DAYS_AHEAD));
   let weekStart = new Date(today); // 表示中の週の初日（今日から7日ずつ）
   let selected = null;             // 選択中の枠 { date, time, remaining }
 
   function initForm() {
     $('sr-form-page').classList.remove('sr-hidden');
+    $('sr-terms-link').href = TERMS_URL;
+    SOURCE_OPTIONS.forEach(s => {
+      $('sr-sources').appendChild(el('label', { class: 'sr-check' },
+        el('input', { type: 'checkbox', name: 'sources', value: s }), s));
+    });
     $('sr-prev-week').addEventListener('click', () => moveWeek(-7));
     $('sr-next-week').addEventListener('click', () => moveWeek(7));
     $('sr-reserve-form').addEventListener('submit', submitReservation);
@@ -203,24 +349,32 @@
     $('sr-week-label').textContent =
       (days[0].getMonth() + 1) + '/' + days[0].getDate() + ' 〜 ' + (days[6].getMonth() + 1) + '/' + days[6].getDate();
     $('sr-prev-week').disabled = weekStart <= today;
+    $('sr-next-week').disabled = toDateStr(addDays(weekStart, 7)) > lastBookableDate;
 
+    const message = $('sr-form-message');
     try {
       const data = await callApi({ action: 'availability', from, to });
+      // 取得失敗のメッセージだけを消す（予約完了などのメッセージは残す）
+      if (message.dataset.loadError) {
+        hideMessage(message);
+        delete message.dataset.loadError;
+      }
       renderCalendar(days, data);
     } catch (err) {
-      showMessage($('sr-form-message'), '空き状況の取得に失敗しました。時間をおいて再度お試しください。', 'error');
+      showMessage(message, '空き状況の取得に失敗しました。時間をおいて再度お試しください。', 'error');
+      message.dataset.loadError = '1';
     }
   }
 
   // 枠の状態を判定
   function slotState(dateStr, time, data) {
     if (data.holidays.includes(dateStr)) return { state: 'closed' };
-    const now = new Date();
-    const nowTime = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
-    if (dateStr < toDateStr(now) || (dateStr === toDateStr(now) && time <= nowTime)) return { state: 'past' };
+    // 開始30分前を過ぎた枠・33日より先の枠は受付不可
+    const deadline = new Date(Date.now() + CUTOFF_MINUTES * 60 * 1000);
+    if (dateStr + ' ' + time < toDateStr(deadline) + ' ' + toTimeStr(deadline)) return { state: 'past' };
+    if (dateStr > lastBookableDate) return { state: 'past' };
     const remaining = CAPACITY - (data.used[dateStr + ' ' + time] || 0);
-    // 保護者1名＋幼児1名の2名分がなければ予約不可
-    if (remaining < 1 + MIN_CHILDREN) return { state: 'full', remaining };
+    if (remaining < MIN_PEOPLE) return { state: 'full', remaining };
     if (remaining <= FEW_THRESHOLD) return { state: 'few', remaining };
     return { state: 'open', remaining };
   }
@@ -229,22 +383,16 @@
     const table = $('sr-calendar');
 
     // 見出し行（曜日・日付）
-    const headRow = document.createElement('tr');
-    headRow.appendChild(document.createElement('th'));
+    const headRow = el('tr', null, el('th'));
     days.forEach(d => {
-      const th = document.createElement('th');
       const dateStr = toDateStr(d);
       const isHoliday = data.holidays.includes(dateStr);
+      const th = el('th', null,
+        el('span', { class: 'sr-weekday' }, isHoliday ? '休業日' : WEEKDAYS[d.getDay()]),
+        el('span', { class: 'sr-day' }, (d.getMonth() + 1) + '/' + d.getDate()));
       if (d.getDay() === 6) th.classList.add('sr-sat');
       if (d.getDay() === 0) th.classList.add('sr-sun');
       if (isHoliday) th.classList.add('sr-closed-day');
-      const weekday = document.createElement('span');
-      weekday.className = 'sr-weekday';
-      weekday.textContent = isHoliday ? '休業日' : WEEKDAYS[d.getDay()];
-      const day = document.createElement('span');
-      day.className = 'sr-day';
-      day.textContent = (d.getMonth() + 1) + '/' + d.getDate();
-      th.append(weekday, day);
       headRow.appendChild(th);
     });
     table.tHead.replaceChildren(headRow);
@@ -253,30 +401,26 @@
     const tbody = table.tBodies[0];
     tbody.replaceChildren();
     TIME_SLOTS.forEach(time => {
-      const tr = tbody.insertRow();
-      const th = document.createElement('th');
-      th.className = 'sr-time';
-      th.textContent = time;
-      tr.appendChild(th);
-
+      const tr = el('tr', null, el('th', { class: 'sr-time' }, time));
       days.forEach(d => {
         const dateStr = toDateStr(d);
         const { state, remaining } = slotState(dateStr, time, data);
-        const td = tr.insertCell();
-        td.className = 'sr-' + state;
+        const td = el('td', { class: 'sr-' + state });
         if (state === 'open' || state === 'few') {
-          const button = document.createElement('button');
-          button.type = 'button';
-          button.className = 'sr-slot sr-' + state;
-          button.textContent = state === 'open' ? '◎' : '△';
-          button.title = '残り' + remaining + '名';
+          const button = el('button', {
+            type: 'button',
+            class: 'sr-slot sr-' + state,
+            title: '残り' + remaining + '名',
+          }, state === 'open' ? '◎' : '△');
           if (selected && selected.date === dateStr && selected.time === time) button.classList.add('sr-selected');
           button.addEventListener('click', () => selectSlot({ date: dateStr, time, remaining }, button));
           td.appendChild(button);
         } else {
           td.textContent = state === 'full' ? '×' : '–';
         }
+        tr.appendChild(td);
       });
+      tbody.appendChild(tr);
     });
   }
 
@@ -290,19 +434,12 @@
       return;
     }
     button.classList.add('sr-selected');
-    $('sr-form-message').classList.add('sr-hidden');
+    hideMessage($('sr-form-message'));
+    $('sr-selected-slot').textContent = formatShortDate(slot.date) + ' ' + slot.time + '〜';
 
-    const d = new Date(slot.date + 'T00:00:00');
-    $('sr-selected-slot').textContent =
-      (d.getMonth() + 1) + '/' + d.getDate() + '（' + WEEKDAYS[d.getDay()] + '） ' + slot.time + '〜';
-
-    // 残り人数に合わせて幼児の人数の選択肢を絞る（保護者1名分を引く）
-    const select = $('sr-reserve-form').elements.children;
-    const prev = Number(select.value);
-    select.replaceChildren();
-    const max = Math.min(MAX_CHILDREN, slot.remaining - 1);
-    for (let n = MIN_CHILDREN; n <= max; n++) select.add(new Option(n + '名', n));
-    if (prev && prev <= max) select.value = prev;
+    // 残り人数を超える人数は選べないようにする
+    const select = $('sr-reserve-form').elements.people;
+    peopleOptions(select, Math.min(MAX_PEOPLE, slot.remaining), Number(select.value));
 
     box.classList.remove('sr-hidden');
     box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -311,17 +448,24 @@
   async function submitReservation(e) {
     e.preventDefault();
     const form = e.target;
-    const button = form.querySelector('button');
+    const f = form.elements;
+    const button = form.querySelector('button[type="submit"]');
     const message = $('sr-form-message');
     button.disabled = true;
     try {
       await callApi({
         action: 'create',
-        name: form.elements.name.value,
-        email: form.elements.email.value,
         date: selected.date,
         time: selected.time,
-        children: Number(form.elements.children.value),
+        people: Number(f.people.value),
+        lastName: f.lastName.value,
+        firstName: f.firstName.value,
+        email: f.email.value,
+        note: f.note.value,
+        parking: f.parking.checked,
+        terms: f.terms.checked,
+        notice: f.notice.checked,
+        sources: [...form.querySelectorAll('input[name="sources"]:checked')].map(c => c.value),
       });
       form.reset();
       selectSlot(null);
@@ -334,8 +478,14 @@
     }
   }
 
-  // ===== 管理ページ =====
+  // =====================================================
+  // 管理ページ（オーナー用）
+  // =====================================================
   let adminPassword = '';
+  let adminData = { reservations: [], holidays: [] };
+  let viewMonth = new Date(today.getFullYear(), today.getMonth(), 1); // 表示中の月
+  // ポップアップの状態（view: list=一覧 / detail=詳細 / edit=編集）
+  let modal = { date: null, tab: 'customers', view: 'list', id: null };
 
   function initAdmin() {
     $('sr-admin-page').classList.remove('sr-hidden');
@@ -348,6 +498,18 @@
         loginForm.classList.add('sr-hidden');
         $('sr-admin-content').classList.remove('sr-hidden');
       }
+    });
+
+    $('sr-prev-month').addEventListener('click', () => moveMonth(-1));
+    $('sr-next-month').addEventListener('click', () => moveMonth(1));
+    $('sr-modal-close').addEventListener('click', closeModal);
+    $('sr-overlay').addEventListener('click', e => { if (e.target === $('sr-overlay')) closeModal(); });
+    document.querySelectorAll('#salon-reserve .sr-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        modal.tab = tab.dataset.tab;
+        modal.view = 'list';
+        renderModal();
+      });
     });
 
     $('sr-holiday-form').addEventListener('submit', async e => {
@@ -370,10 +532,11 @@
   async function loadAdmin() {
     const message = $('sr-admin-message');
     try {
-      const data = await callApi({ action: 'list', password: adminPassword });
-      message.classList.add('sr-hidden');
-      renderReservations(data.reservations);
-      renderHolidays(data.holidays);
+      adminData = await callApi({ action: 'list', password: adminPassword });
+      hideMessage(message);
+      renderMonth();
+      renderHolidays();
+      if (modal.date) renderModal();
       return true;
     } catch (err) {
       showMessage(message, err.message, 'error');
@@ -381,67 +544,245 @@
     }
   }
 
-  function renderReservations(list) {
-    const tbody = $('sr-reservation-table').tBodies[0];
-    tbody.replaceChildren();
+  function moveMonth(n) {
+    viewMonth = new Date(viewMonth.getFullYear(), viewMonth.getMonth() + n, 1);
+    renderMonth();
+  }
 
+  function reservationsOn(dateStr) {
+    return adminData.reservations
+      .filter(r => r.date === dateStr)
+      .sort((a, b) => a.time.localeCompare(b.time) || Number(a.id) - Number(b.id));
+  }
+
+  // 月間カレンダー（日曜始まり）
+  function renderMonth() {
+    const y = viewMonth.getFullYear();
+    const m = viewMonth.getMonth();
+    $('sr-month-label').textContent = y + '年' + (m + 1) + '月';
+    $('sr-prev-month').textContent = '‹ ' + String(new Date(y, m - 1, 1).getMonth() + 1).padStart(2, '0');
+    $('sr-next-month').textContent = String(new Date(y, m + 1, 1).getMonth() + 1).padStart(2, '0') + ' ›';
+
+    const table = $('sr-month');
+    table.tHead.replaceChildren(el('tr', null, ...WEEKDAYS.map(w => el('th', null, w))));
+
+    const tbody = table.tBodies[0];
+    tbody.replaceChildren();
+    let day = addDays(new Date(y, m, 1), -new Date(y, m, 1).getDay()); // 表示の開始日（日曜）
+    const end = new Date(y, m + 1, 0);
+    while (day <= end) {
+      const tr = el('tr');
+      for (let i = 0; i < 7; i++) {
+        const dateStr = toDateStr(day);
+        const count = reservationsOn(dateStr).filter(r => r.status !== 'キャンセル').length;
+        const td = el('td');
+        if (day.getMonth() !== m) td.classList.add('sr-other-month');
+        if (adminData.holidays.includes(dateStr)) td.classList.add('sr-holiday');
+        td.appendChild(el('button', { type: 'button', class: 'sr-month-cell', onclick: () => openModal(dateStr) },
+          String(day.getDate()),
+          count > 0 ? el('span', { class: 'sr-month-count' }, String(count)) : null));
+        tr.appendChild(td);
+        day = addDays(day, 1);
+      }
+      tbody.appendChild(tr);
+    }
+  }
+
+  // ----- 日別ポップアップ -----
+  function openModal(dateStr) {
+    modal = { date: dateStr, tab: 'customers', view: 'list', id: null };
+    $('sr-overlay').classList.remove('sr-hidden');
+    renderModal();
+  }
+
+  function closeModal() {
+    modal.date = null;
+    $('sr-overlay').classList.add('sr-hidden');
+  }
+
+  function moveDay(n) {
+    modal = { date: toDateStr(addDays(parseDate(modal.date), n)), tab: modal.tab, view: 'list', id: null };
+    renderModal();
+  }
+
+  function renderModal() {
+    $('sr-modal-title').textContent = formatLongDate(modal.date);
+    document.querySelectorAll('#salon-reserve .sr-tab').forEach(tab => {
+      tab.classList.toggle('sr-active', tab.dataset.tab === modal.tab);
+    });
+
+    const body = $('sr-modal-body');
+    const foot = $('sr-modal-foot');
+    body.replaceChildren();
+    foot.replaceChildren();
+    body.scrollTop = 0;
+
+    const reservation = adminData.reservations.find(r => r.id === modal.id);
+    if (modal.view === 'detail' && reservation) {
+      renderDetail(body, foot, reservation);
+    } else if (modal.view === 'edit' && reservation) {
+      renderEdit(body, foot, reservation);
+    } else {
+      if (modal.tab === 'customers') renderCustomers(body);
+      else renderSlots(body);
+      foot.append(
+        el('button', { type: 'button', onclick: () => moveDay(-1), 'aria-label': '前日' }, '‹'),
+        el('button', { type: 'button', onclick: () => moveDay(1), 'aria-label': '翌日' }, '›'),
+        el('button', { type: 'button', onclick: downloadCsv }, 'CSVをダウンロード'),
+        el('span', { class: 'sr-spacer' }),
+        el('button', { type: 'button', onclick: closeModal }, '閉じる'));
+    }
+  }
+
+  // 「顧客」タブ：その日の予約一覧
+  function renderCustomers(body) {
+    const list = reservationsOn(modal.date);
     if (list.length === 0) {
-      const td = tbody.insertRow().insertCell();
-      td.colSpan = 7;
-      td.textContent = '予約はありません';
+      body.appendChild(el('div', { class: 'sr-empty' }, '予約はありません'));
       return;
     }
-
     list.forEach(r => {
-      const tr = tbody.insertRow();
-      if (r.status === 'キャンセル') tr.className = 'sr-canceled';
-      [r.date, r.time, r.name, r.email, r.children + '名'].forEach(v => {
-        tr.insertCell().textContent = v;
-      });
-
-      // ステータス変更
-      const select = document.createElement('select');
-      STATUSES.forEach(s => select.add(new Option(s, s, false, s === r.status)));
-      select.addEventListener('change', () => changeStatus(r.id, select.value));
-      tr.insertCell().appendChild(select);
-
-      // キャンセルボタン
-      const cell = tr.insertCell();
-      if (r.status !== 'キャンセル') {
-        const button = document.createElement('button');
-        button.type = 'button';
-        button.textContent = 'キャンセル';
-        button.addEventListener('click', () => {
-          if (confirm(r.date + ' ' + r.time + ' ' + r.name + ' 様の予約をキャンセルしますか？')) {
-            changeStatus(r.id, 'キャンセル');
-          }
-        });
-        cell.appendChild(button);
-      }
+      body.appendChild(el('button', {
+        type: 'button',
+        class: 'sr-customer',
+        onclick: () => { modal.view = 'detail'; modal.id = r.id; renderModal(); },
+      },
+      el('div', null, r.time + '　' + r.id + '　' + r.people + '名'),
+      el('div', null, el('span', { class: 'sr-badge ' + (STATUS_CLASS[r.status] || '') }, r.status)),
+      el('div', null, r.lastName + ' ' + r.firstName),
+      el('div', null, r.email)));
     });
   }
 
-  function renderHolidays(holidays) {
+  // 「予約」タブ：時間ごとの残り枠
+  function renderSlots(body) {
+    if (adminData.holidays.includes(modal.date)) {
+      body.appendChild(el('div', { class: 'sr-empty' }, 'この日は休業日です'));
+    }
+    const list = reservationsOn(modal.date).filter(r => r.status !== 'キャンセル');
+    TIME_SLOTS.forEach(time => {
+      const used = list.filter(r => r.time === time).reduce((sum, r) => sum + r.people, 0);
+      body.appendChild(el('div', { class: 'sr-slot-row' }, time, el('span', null, '残り' + Math.max(CAPACITY - used, 0) + '枠')));
+    });
+  }
+
+  // 予約の詳細
+  function renderDetail(body, foot, r) {
+    const items = [
+      ['ID', r.id], ['状態', el('span', { class: 'sr-badge ' + (STATUS_CLASS[r.status] || '') }, r.status)],
+      ['予約日時', formatLongDate(r.date) + ', ' + r.time], ['利用人数', r.people + '名'],
+      ['支払方法', '現地で支払う'], ['送信日時', r.created], ['姓', r.lastName], ['名', r.firstName],
+      ['メール', r.email], ['備考欄', r.note], ['駐車場について', r.parking], ['利用規約', r.terms],
+      ['お知らせ', r.notice], ['当店をどこでお知りになりましたか？', r.source],
+    ];
+    body.appendChild(el('div', { class: 'sr-detail' },
+      el('button', { type: 'button', class: 'sr-back', onclick: backToList }, '‹ 一覧に戻る'),
+      el('dl', null, ...items.flatMap(([k, v]) => [el('dt', null, k), el('dd', null, v || '')]))));
+
+    foot.append(
+      el('span', { class: 'sr-spacer' }),
+      el('button', { type: 'button', class: 'sr-danger', onclick: () => deleteReservation(r) }, '削除'),
+      el('button', { type: 'button', onclick: () => { modal.view = 'edit'; renderModal(); } }, '編集'));
+  }
+
+  // 予約の編集
+  function renderEdit(body, foot, r) {
+    const form = el('form', { class: 'sr-detail', id: 'sr-edit-form' },
+      el('button', { type: 'button', class: 'sr-back', onclick: () => { modal.view = 'detail'; renderModal(); } }, '‹ 詳細に戻る'),
+      el('label', null, '状態', el('select', { name: 'status' }, ...STATUSES.map(s => new Option(s, s, false, s === r.status)))),
+      el('div', { class: 'sr-row' },
+        el('label', null, '予約日', el('input', { type: 'date', name: 'date', value: r.date, required: true })),
+        el('label', null, '時間', el('select', { name: 'time' }, ...TIME_SLOTS.map(t => new Option(t, t, false, t === r.time))))),
+      el('label', null, '利用人数', el('select', { name: 'people' })),
+      el('div', { class: 'sr-row' },
+        el('label', null, '姓', el('input', { type: 'text', name: 'lastName', value: r.lastName, required: true })),
+        el('label', null, '名', el('input', { type: 'text', name: 'firstName', value: r.firstName, required: true }))),
+      el('label', null, 'メール', el('input', { type: 'email', name: 'email', value: r.email, required: true })),
+      el('label', null, '備考欄', el('input', { type: 'text', name: 'note', value: r.note })),
+      el('label', { class: 'sr-check' }, el('input', { type: 'checkbox', name: 'parking', checked: r.parking === '利用予定' }), '駐車場利用予定'));
+    peopleOptions(form.elements.people, MAX_PEOPLE, r.people);
+    form.addEventListener('submit', e => { e.preventDefault(); saveReservation(r, form); });
+    body.appendChild(form);
+
+    foot.append(
+      el('span', { class: 'sr-spacer' }),
+      el('button', { type: 'button', onclick: () => { modal.view = 'detail'; renderModal(); } }, 'キャンセル'),
+      el('button', { type: 'button', onclick: () => form.requestSubmit() }, '保存'));
+  }
+
+  function backToList() {
+    modal.view = 'list';
+    modal.id = null;
+    renderModal();
+  }
+
+  async function saveReservation(r, form) {
+    const f = form.elements;
+    try {
+      await callApi({
+        action: 'update',
+        password: adminPassword,
+        id: r.id,
+        fields: {
+          status: f.status.value,
+          date: f.date.value,
+          time: f.time.value,
+          people: Number(f.people.value),
+          lastName: f.lastName.value,
+          firstName: f.firstName.value,
+          email: f.email.value,
+          note: f.note.value,
+          parking: f.parking.checked,
+        },
+      });
+      modal.view = 'detail';
+      await loadAdmin();
+    } catch (err) {
+      alert('保存できませんでした：' + err.message);
+    }
+  }
+
+  async function deleteReservation(r) {
+    if (!confirm('予約ID ' + r.id + '（' + r.date + ' ' + r.time + ' ' + r.lastName + ' ' + r.firstName + ' 様）を削除しますか？\n削除すると元に戻せません。')) return;
+    try {
+      await callApi({ action: 'delete', password: adminPassword, id: r.id });
+      backToList();
+      await loadAdmin();
+    } catch (err) {
+      alert('削除できませんでした：' + err.message);
+    }
+  }
+
+  // その日の予約をCSVでダウンロード（Excelで文字化けしないようBOM付き）
+  function downloadCsv() {
+    const header = ['予約ID', '状態', '予約日', '時間', '利用人数', '姓', '名', 'メール', '備考欄', '駐車場',
+      '利用規約', 'お知らせ', '当店を知ったきっかけ', '送信日時'];
+    const rows = reservationsOn(modal.date).map(r => [r.id, r.status, r.date, r.time, r.people, r.lastName, r.firstName,
+      r.email, r.note, r.parking, r.terms, r.notice, r.source, r.created]);
+    const csv = [header, ...rows]
+      .map(row => row.map(v => '"' + String(v ?? '').replace(/"/g, '""') + '"').join(','))
+      .join('\r\n');
+    const url = URL.createObjectURL(new Blob(['﻿' + csv], { type: 'text/csv' }));
+    const a = el('a', { href: url, download: 'reservations_' + modal.date + '.csv' });
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  }
+
+  // ----- 休業日 -----
+  function renderHolidays() {
     const ul = $('sr-holiday-list');
     ul.replaceChildren();
-    const upcoming = holidays.filter(d => d >= toDateStr(new Date()));
+    const upcoming = adminData.holidays.filter(d => d >= toDateStr(today));
     if (upcoming.length === 0) {
-      const li = document.createElement('li');
-      li.textContent = '登録されている休業日はありません';
-      ul.appendChild(li);
+      ul.appendChild(el('li', null, '登録されている休業日はありません'));
       return;
     }
     upcoming.forEach(date => {
-      const li = document.createElement('li');
-      const d = new Date(date + 'T00:00:00');
-      const span = document.createElement('span');
-      span.textContent = date + '（' + WEEKDAYS[d.getDay()] + '）';
-      const button = document.createElement('button');
-      button.type = 'button';
-      button.textContent = '削除';
-      button.addEventListener('click', () => removeHoliday(date));
-      li.append(span, button);
-      ul.appendChild(li);
+      ul.appendChild(el('li', null,
+        el('span', null, date + '（' + WEEKDAYS[parseDate(date).getDay()] + '）'),
+        el('button', { type: 'button', onclick: () => removeHoliday(date) }, '削除')));
     });
   }
 
@@ -450,17 +791,6 @@
       await callApi({ action: 'removeHoliday', password: adminPassword, date });
       await loadAdmin();
     } catch (err) {
-      showMessage($('sr-admin-message'), err.message, 'error');
-    }
-  }
-
-  async function changeStatus(id, status) {
-    try {
-      await callApi({ action: 'updateStatus', password: adminPassword, id, status });
-      await loadAdmin();
-    } catch (err) {
-      // 表示を元に戻してからエラーを出す
-      await loadAdmin();
       showMessage($('sr-admin-message'), err.message, 'error');
     }
   }
