@@ -321,7 +321,8 @@
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   const lastBookableDate = toDateStr(addDays(today, MAX_DAYS_AHEAD));
-  let weekStart = new Date(today); // 表示中の週の初日（今日から7日ずつ）
+  const thisSunday = addDays(today, -today.getDay()); // 今週の日曜日
+  let weekStart = new Date(thisSunday); // 表示中の週の初日（日曜始まり）
   let selected = null;             // 選択中の枠 { date, time, remaining }
 
   function initForm() {
@@ -343,7 +344,7 @@
 
   function moveWeek(days) {
     weekStart = addDays(weekStart, days);
-    if (weekStart < today) weekStart = new Date(today);
+    if (weekStart < thisSunday) weekStart = new Date(thisSunday);
     selectSlot(null);
     loadCalendar();
   }
@@ -355,7 +356,7 @@
     const to = toDateStr(days[6]);
     $('sr-week-label').textContent =
       (days[0].getMonth() + 1) + '/' + days[0].getDate() + ' 〜 ' + (days[6].getMonth() + 1) + '/' + days[6].getDate();
-    $('sr-prev-week').disabled = weekStart <= today;
+    $('sr-prev-week').disabled = weekStart <= thisSunday;
     $('sr-next-week').disabled = toDateStr(addDays(weekStart, 7)) > lastBookableDate;
 
     const message = $('sr-form-message');
