@@ -61,6 +61,29 @@
   #salon-reserve .sr-slot:hover { background: #f1f8f2; }
   #salon-reserve .sr-slot.sr-selected { background: #4a7c59; color: #fff; }
 
+  /* 月間・週間の切り替え */
+  #salon-reserve .sr-view-toggle { display: flex; margin-top: 16px; }
+  #salon-reserve .sr-view-toggle button { flex: 1; max-width: 120px; padding: 8px; font-size: 0.9rem; background: #fff; color: #4a7c59; border: 1px solid #4a7c59; border-radius: 0; }
+  #salon-reserve .sr-view-toggle button:first-child { border-radius: 4px 0 0 4px; }
+  #salon-reserve .sr-view-toggle button:last-child { border-radius: 0 4px 4px 0; border-left: none; }
+  #salon-reserve .sr-view-toggle button.sr-active { background: #4a7c59; color: #fff; }
+
+  /* 月間の空き状況（予約ページ） */
+  #salon-reserve .sr-cmonth { width: 100%; border-collapse: collapse; table-layout: fixed; border: 1px solid #ddd; margin: 0; }
+  #salon-reserve .sr-cmonth th { border: 1px solid #ddd; padding: 6px 0; text-align: center; font-weight: normal; font-size: 0.85rem; color: #888; background: #f7f8fa; }
+  #salon-reserve .sr-cmonth th.sr-sat { color: #3a6ea5; }
+  #salon-reserve .sr-cmonth th.sr-sun { color: #c0392b; }
+  #salon-reserve .sr-cmonth td { border: 1px solid #ddd; height: 64px; padding: 0; vertical-align: top; background: #fff; text-align: center; }
+  #salon-reserve .sr-cmonth td.sr-other-month { opacity: 0.4; }
+  #salon-reserve .sr-cmonth td.sr-closed, #salon-reserve .sr-cmonth td.sr-past { background: #f7f7f7; color: #bbb; }
+  #salon-reserve .sr-cmonth .sr-cday { display: block; font-size: 0.85rem; padding-top: 4px; }
+  #salon-reserve .sr-cmonth .sr-cstat { display: block; font-size: 0.8rem; font-weight: bold; margin-top: 4px; }
+  #salon-reserve .sr-cmonth .sr-open .sr-cstat { color: #3c9a4e; }
+  #salon-reserve .sr-cmonth .sr-few .sr-cstat { color: #e08a1e; }
+  #salon-reserve .sr-cmonth .sr-full .sr-cstat { color: #bbb; }
+  #salon-reserve .sr-cmonth button { display: block; width: 100%; height: 100%; min-height: 64px; margin: 0; padding: 0; background: none; color: #333; border-radius: 0; }
+  #salon-reserve .sr-cmonth button:hover { background: #f1f8f2; }
+
   /* 予約入力欄 */
   #salon-reserve .sr-reserve-box { margin-top: 24px; padding: 16px; border: 1px solid #4a7c59; border-radius: 8px; }
   #salon-reserve .sr-selected-slot { font-weight: bold; font-size: 1.1rem; }
@@ -120,13 +143,21 @@
     <div class="sr-legend">
       <span>残りN … 予約できる残り人数</span><span>× 満員</span><span>– 受付不可</span>
     </div>
+    <div class="sr-view-toggle">
+      <button type="button" data-view="month">月間</button>
+      <button type="button" data-view="week">週間</button>
+    </div>
     <div class="sr-nav">
       <button type="button" id="sr-prev-week">‹ 前の週</button>
       <span id="sr-week-label"></span>
       <button type="button" id="sr-next-week">次の週 ›</button>
     </div>
-    <div class="sr-table-wrap">
+    <div class="sr-table-wrap" id="sr-week-view">
       <table class="sr-calendar" id="sr-calendar"><thead></thead><tbody></tbody></table>
+    </div>
+    <div id="sr-month-view" class="sr-hidden">
+      <table class="sr-cmonth" id="sr-cmonth"><thead></thead><tbody></tbody></table>
+      <p class="sr-desc">日付を選ぶと、その週の時間ごとの空き状況（週間表示）に切り替わります。</p>
     </div>
 
     <div id="sr-reserve-box" class="sr-reserve-box sr-hidden">
@@ -323,6 +354,9 @@
   const lastBookableDate = toDateStr(addDays(today, MAX_DAYS_AHEAD));
   const thisSunday = addDays(today, -today.getDay()); // 今週の日曜日
   let weekStart = new Date(thisSunday); // 表示中の週の初日（日曜始まり）
+  const thisMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+  let monthStart = new Date(thisMonth); // 月間表示で表示中の月の1日
+  let view = 'week';                    // 表示形式（week=週間 / month=月間）
   let selected = null;             // 選択中の枠 { date, time, remaining }
 
   function initForm() {
@@ -336,9 +370,26 @@
       $('sr-sources').appendChild(el('label', { class: 'sr-check' },
         el('input', { type: 'checkbox', name: 'sources', value: s }), s));
     });
-    $('sr-prev-week').addEventListener('click', () => moveWeek(-7));
-    $('sr-next-week').addEventListener('click', () => moveWeek(7));
+    // 前へ・次へは、表示形式に合わせて週または月を移動する
+    $('sr-prev-week').addEventListener('click', () => view === 'week' ? moveWeek(-7) : moveCustomerMonth(-1));
+    $('sr-next-week').addEventListener('click', () => view === 'week' ? moveWeek(7) : moveCustomerMonth(1));
+    document.querySelectorAll('#salon-reserve .sr-view-toggle button').forEach(b => {
+      b.addEventListener('click', () => setView(b.dataset.view));
+    });
     $('sr-reserve-form').addEventListener('submit', submitReservation);
+    setView('week');
+  }
+
+  function setView(v) {
+    view = v;
+    document.querySelectorAll('#salon-reserve .sr-view-toggle button').forEach(b => {
+      b.classList.toggle('sr-active', b.dataset.view === v);
+    });
+    $('sr-week-view').classList.toggle('sr-hidden', v !== 'week');
+    $('sr-month-view').classList.toggle('sr-hidden', v !== 'month');
+    $('sr-prev-week').textContent = v === 'week' ? '‹ 前の週' : '‹ 前の月';
+    $('sr-next-week').textContent = v === 'week' ? '次の週 ›' : '次の月 ›';
+    selectSlot(null);
     loadCalendar();
   }
 
@@ -349,16 +400,14 @@
     loadCalendar();
   }
 
-  // 空き状況を取得してカレンダーを描画
-  async function loadCalendar() {
-    const days = [...Array(7)].map((_, i) => addDays(weekStart, i));
-    const from = toDateStr(days[0]);
-    const to = toDateStr(days[6]);
-    $('sr-week-label').textContent =
-      (days[0].getMonth() + 1) + '/' + days[0].getDate() + ' 〜 ' + (days[6].getMonth() + 1) + '/' + days[6].getDate();
-    $('sr-prev-week').disabled = weekStart <= thisSunday;
-    $('sr-next-week').disabled = toDateStr(addDays(weekStart, 7)) > lastBookableDate;
+  function moveCustomerMonth(n) {
+    monthStart = new Date(monthStart.getFullYear(), monthStart.getMonth() + n, 1);
+    if (monthStart < thisMonth) monthStart = new Date(thisMonth);
+    loadCalendar();
+  }
 
+  // 空き状況を取得する（失敗したらメッセージを出して null を返す）
+  async function fetchAvailability(from, to) {
     const message = $('sr-form-message');
     try {
       const data = await callApi({ action: 'availability', from, to });
@@ -367,11 +416,87 @@
         hideMessage(message);
         delete message.dataset.loadError;
       }
-      renderCalendar(days, data);
+      return data;
     } catch (err) {
       showMessage(message, '空き状況の取得に失敗しました。時間をおいて再度お試しください。', 'error');
       message.dataset.loadError = '1';
+      return null;
     }
+  }
+
+  // 今の表示形式で空き状況を取得して描画
+  function loadCalendar() {
+    return view === 'week' ? loadWeek() : loadCustomerMonth();
+  }
+
+  async function loadWeek() {
+    const days = [...Array(7)].map((_, i) => addDays(weekStart, i));
+    $('sr-week-label').textContent =
+      (days[0].getMonth() + 1) + '/' + days[0].getDate() + ' 〜 ' + (days[6].getMonth() + 1) + '/' + days[6].getDate();
+    $('sr-prev-week').disabled = weekStart <= thisSunday;
+    $('sr-next-week').disabled = toDateStr(addDays(weekStart, 7)) > lastBookableDate;
+
+    const data = await fetchAvailability(toDateStr(days[0]), toDateStr(days[6]));
+    if (data) renderCalendar(days, data);
+  }
+
+  // 月間表示（日曜始まり。前後の月の日も薄く表示する）
+  async function loadCustomerMonth() {
+    const y = monthStart.getFullYear();
+    const m = monthStart.getMonth();
+    const gridStart = addDays(monthStart, -monthStart.getDay());
+    const monthEnd = new Date(y, m + 1, 0);
+    const gridEnd = addDays(monthEnd, 6 - monthEnd.getDay());
+    $('sr-week-label').textContent = y + '年' + (m + 1) + '月';
+    $('sr-prev-week').disabled = monthStart <= thisMonth;
+    $('sr-next-week').disabled = toDateStr(new Date(y, m + 1, 1)) > lastBookableDate;
+
+    const data = await fetchAvailability(toDateStr(gridStart), toDateStr(gridEnd));
+    if (data) renderCustomerMonth(gridStart, gridEnd, m, data);
+  }
+
+  function renderCustomerMonth(gridStart, gridEnd, month, data) {
+    const table = $('sr-cmonth');
+    table.tHead.replaceChildren(el('tr', null, ...WEEKDAYS.map((w, i) =>
+      el('th', { class: i === 0 ? 'sr-sun' : i === 6 ? 'sr-sat' : '' }, w))));
+
+    const tbody = table.tBodies[0];
+    tbody.replaceChildren();
+    for (let day = new Date(gridStart); day <= gridEnd; day = addDays(day, 7)) {
+      const tr = el('tr');
+      for (let i = 0; i < 7; i++) {
+        const d = addDays(day, i);
+        const dateStr = toDateStr(d);
+        // その日の予約できる枠の数で状態を決める
+        const states = TIME_SLOTS.map(time => slotState(dateStr, time, data));
+        const bookable = states.filter(s => s.state === 'open' || s.state === 'few');
+        let state, text;
+        if (data.holidays.includes(dateStr)) { state = 'closed'; text = '休業日'; }
+        else if (bookable.length > 0) {
+          state = bookable.some(s => s.state === 'open') ? 'open' : 'few';
+          text = '空き' + bookable.length + '枠';
+        } else if (states.some(s => s.state === 'full')) { state = 'full'; text = '×'; }
+        else { state = 'past'; text = '–'; }
+
+        const td = el('td', { class: 'sr-' + state });
+        if (d.getMonth() !== month) td.classList.add('sr-other-month');
+        const content = [el('span', { class: 'sr-cday' }, String(d.getDate())), el('span', { class: 'sr-cstat' }, text)];
+        // 予約できる枠がある日は、押すとその週の週間表示に切り替える
+        if (bookable.length > 0) {
+          td.appendChild(el('button', { type: 'button', title: formatShortDate(dateStr) + 'の週を表示', onclick: () => openWeekOf(d) }, ...content));
+        } else {
+          td.append(...content);
+        }
+        tr.appendChild(td);
+      }
+      tbody.appendChild(tr);
+    }
+  }
+
+  function openWeekOf(d) {
+    weekStart = addDays(d, -d.getDay());
+    if (weekStart < thisSunday) weekStart = new Date(thisSunday);
+    setView('week');
   }
 
   // 枠の状態を判定
